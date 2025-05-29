@@ -8,7 +8,7 @@ const create = async (req, res) => {
     const newData = await Status.create({ name });
     res.status(201).send({ message: "New Status Added", newData });
   } catch (error) {
-    sendErrorResponse(error, res);
+    sendErrorResponse(error, res, 400);
   }
 };
 
@@ -17,7 +17,7 @@ const getAll = async (req, res) => {
     const data = await Status.findAll({});
     res.status(201).send(data);
   } catch (error) {
-    sendErrorResponse(error, res);
+    sendErrorResponse(error, res, 400);
   }
 };
 
@@ -27,7 +27,7 @@ const getOne = async (req, res) => {
     const data = await Status.findByPk(id);
     res.status(201).send(data);
   } catch (error) {
-    sendErrorResponse(error, res);
+    sendErrorResponse(error, res, 400);
   }
 };
 
@@ -44,7 +44,7 @@ const update = async (req, res) => {
     await status.update(updateData);
     res.status(200).send({ message: "Updated successfully", data: status });
   } catch (error) {
-    sendErrorResponse(error, res);
+    sendErrorResponse(error, res, 400);
   }
 };
 
@@ -60,7 +60,7 @@ const remove = async (req, res) => {
     await status.destroy();
     res.status(200).send({ message: "Status deleted successfully" });
   } catch (error) {
-    sendErrorResponse(error, res);
+    sendErrorResponse(error, res, 400);
   }
 };
 

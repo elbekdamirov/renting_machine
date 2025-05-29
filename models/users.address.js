@@ -1,9 +1,9 @@
 const sequelize = require("../config/db");
 const { DataTypes } = require("sequelize");
-const Region = require("./region.model");
+const Users = require("./users.model");
 
-const District = sequelize.define(
-  "district",
+const UserAddress = sequelize.define(
+  "user_address",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -12,6 +12,10 @@ const District = sequelize.define(
     },
     name: {
       type: DataTypes.STRING(50),
+      allowNull: false,
+    },
+    address: {
+      type: DataTypes.STRING(1000),
     },
   },
   {
@@ -20,7 +24,7 @@ const District = sequelize.define(
   }
 );
 
-Region.hasMany(District);
-District.belongsTo(Region);
+Users.hasMany(UserAddress);
+UserAddress.belongsTo(Users);
 
-module.exports = District;
+module.exports = UserAddress;

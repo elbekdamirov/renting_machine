@@ -1,26 +1,27 @@
 const sequelize = require("../config/db");
 const { DataTypes } = require("sequelize");
 const Region = require("./region.model");
+const Machine = require("./machine.model");
 
-const District = sequelize.define(
-  "district",
+const Image = sequelize.define(
+  "image",
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {
-      type: DataTypes.STRING(50),
+    image_url: {
+      type: DataTypes.STRING(150),
     },
   },
   {
     freezeTableName: true,
-    timestamps: false,
+    timestamps: true,
   }
 );
 
-Region.hasMany(District);
-District.belongsTo(Region);
+Machine.hasMany(Image);
+Image.belongsTo(Machine);
 
-module.exports = District;
+module.exports = Image;

@@ -1,14 +1,14 @@
 const { sendErrorResponse } = require("../helpers/send_error_response");
 const District = require("../models/district.model");
 const Machine = require("../models/machine.model");
-const Region = require("../models/region.model");
+const Image = require("../models/image.model");
 
 const create = async (req, res) => {
   try {
-    const { name, regionId } = req.body;
+    const { image_url, machineId } = req.body;
 
-    const newData = await District.create({ name, regionId });
-    res.status(201).send({ message: "New District Added", newData });
+    const newData = await Image.create({ image_url, machineId });
+    res.status(201).send({ message: "New Image Added", newData });
   } catch (error) {
     sendErrorResponse(error, res, 400);
   }
@@ -16,19 +16,15 @@ const create = async (req, res) => {
 
 const getAll = async (req, res) => {
   try {
-    const data = await District.findAll({
+    const data = await Image.findAll({
       include: [
-        {
-          model: Region,
-          attributes: ["name"],
-        },
         {
           model: Machine,
           attributes: ["name", "is_available"],
         },
       ],
     });
-    res.status(200).send(data);
+    res.status(201).send(data);
   } catch (error) {
     sendErrorResponse(error, res, 400);
   }
@@ -37,7 +33,7 @@ const getAll = async (req, res) => {
 const getOne = async (req, res) => {
   const { id } = req.params;
   try {
-    const data = await District.findByPk(id);
+    const data = await Image.findByPk(id);
     res.status(201).send(data);
   } catch (error) {
     sendErrorResponse(error, res, 400);
@@ -49,13 +45,13 @@ const update = async (req, res) => {
   const updateData = req.body;
 
   try {
-    const district = await District.findByPk(id);
-    if (!district) {
-      return res.status(404).send({ message: "District not found" });
+    const image = await Image.findByPk(id);
+    if (!image) {
+      return res.status(404).send({ message: "Image not found" });
     }
 
-    await district.update(updateData);
-    res.status(200).send({ message: "Updated successfully", data: district });
+    await image.update(updateData);
+    res.status(200).send({ message: "Updated successfully", data: image });
   } catch (error) {
     sendErrorResponse(error, res, 400);
   }
@@ -65,13 +61,13 @@ const remove = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const district = await District.findByPk(id);
-    if (!district) {
-      return res.status(404).send({ message: "District not found" });
+    const image = await Image.findByPk(id);
+    if (!image) {
+      return res.status(404).send({ message: "Image not found" });
     }
 
-    await district.destroy();
-    res.status(200).send({ message: "District deleted successfully" });
+    await image.destroy();
+    res.status(200).send({ message: "Image deleted successfully" });
   } catch (error) {
     sendErrorResponse(error, res, 400);
   }

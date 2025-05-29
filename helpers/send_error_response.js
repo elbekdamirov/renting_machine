@@ -1,6 +1,6 @@
-const sendErrorResponse = (error, res) => {
+const sendErrorResponse = (error, res, status) => {
   console.log(error);
-  res.status(400).send({ message: error.message });
+  res.status(status).send({ error: "Xatolik", message: error.message });
 };
 
 module.exports = {
