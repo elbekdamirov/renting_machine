@@ -44,7 +44,7 @@ const getAll = async (req, res) => {
           attributes: ["name", "is_available"],
         },
       ],
-      attributes: ["full_name", "phone"],
+      attributes: ["id", "full_name", "phone"],
     });
     res.status(200).send(data);
   } catch (error) {
@@ -55,7 +55,18 @@ const getAll = async (req, res) => {
 const getOne = async (req, res) => {
   const { id } = req.params;
   try {
-    const data = await Users.findByPk(id);
+    const data = await Users.findByPk(id, {
+      include: [
+        {
+          model: UserAddress,
+          attributes: ["name", "address"],
+        },
+        {
+          model: Machine,
+          attributes: ["name", "is_available"],
+        },
+      ],
+    });
     res.status(201).send(data);
   } catch (error) {
     sendErrorResponse(error, res, 400);

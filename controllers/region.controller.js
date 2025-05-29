@@ -37,7 +37,18 @@ const getAll = async (req, res) => {
 const getOne = async (req, res) => {
   const { id } = req.params;
   try {
-    const data = await Region.findByPk(id);
+    const data = await Region.findByPk(id, {
+      include: [
+        {
+          model: District,
+          attributes: ["name"],
+        },
+        {
+          model: Machine,
+          attributes: ["name", "is_available"],
+        },
+      ],
+    });
     res.status(201).send(data);
   } catch (error) {
     sendErrorResponse(error, res, 400);
