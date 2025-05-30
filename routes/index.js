@@ -10,6 +10,10 @@ const imageRouter = require("./image.routes");
 const roleRouter = require("./role.routes");
 const userRoleRouter = require("./user-role.routes");
 const authRouter = require("./auth.routes");
+const reviewRoleRouter = require("./review.routes");
+const userLocationRouter = require("./user-location.routes");
+const contractRouter = require("./contract.routes");
+const paymentRouter = require("./payment.routes");
 const router = require("express").Router();
 
 router.use("/auth", authRouter);
@@ -24,5 +28,9 @@ router.use("/machine", machineRouter);
 router.use("/image", imageRouter);
 router.use("/roles", roleRouter);
 router.use("/user-role", userRoleRouter);
+router.use("/review", reviewRoleRouter);
+router.use("/user-location", userLocationRouter);
+router.use("/contract", contractRouter);
+router.use("/payment", paymentRouter);
 
 module.exports = router;
