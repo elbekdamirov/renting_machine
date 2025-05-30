@@ -1,32 +1,23 @@
 const { sendErrorResponse } = require("../helpers/send_error_response");
-const Machine = require("../models/machine.model");
 const Role = require("../models/role.model");
-const UserAddress = require("../models/users.address");
 const Users = require("../models/users.model");
-const bcrypt = require("bcrypt");
 
 const create = async (req, res) => {
   try {
-    const { full_name, phone, email, password, confirm_password } = req.body;
+    const { name, description } = req.body;
 
-    const candidate = await Users.findOne({ where: { email } });
-    if (candidate) {
-      return sendErrorResponse({ message: "Bunday user mavjud" }, res, 400);
-    }
-
-    if (password != confirm_password) {
-      return sendErrorResponse({ message: "Parollar mos emas" }, res, 400);
-    }
-
-    const hashed_password = await bcrypt.hash(password, 7);
-
-    const newData = await Users.create({
-      full_name,
-      phone,
-      email,
-      hashed_password,
+    const candidate = await Role.findOne({
+      where: { name: name.toLowerCase() },
     });
-    res.status(201).send({ message: "New User Added", newData });
+    if (candidate) {
+      return sendErrorResponse({ message: "Bunday role mavjud" }, res, 400);
+    }
+
+    const newData = await Role.create({
+      name: name.toLowerCase(),
+      description,
+    });
+    res.status(201).send({ message: "New Role Added", newData });
   } catch (error) {
     sendErrorResponse(error, res, 400);
   }
@@ -34,22 +25,14 @@ const create = async (req, res) => {
 
 const getAll = async (req, res) => {
   try {
-    const data = await Users.findAll({
+    const data = await Role.findAll({
       include: [
         {
-          model: UserAddress,
-          attributes: ["name", "address"],
-        },
-        {
-          model: Machine,
-          attributes: ["name", "is_available"],
-        },
-        {
-          model: Role,
-          attributes: ["name"],
-          through: { attributes: [] },
+          model: Users,
+          attributes: ["full_name", "email"],
         },
       ],
+      attributes: ["id", "name"],
     });
     res.status(200).send(data);
   } catch (error) {
@@ -60,7 +43,7 @@ const getAll = async (req, res) => {
 const getOne = async (req, res) => {
   const { id } = req.params;
   try {
-    const data = await Users.findByPk(id, {
+    const data = await Role.findByPk(id, {
       include: [
         {
           model: UserAddress,
@@ -83,7 +66,7 @@ const update = async (req, res) => {
   const updateData = req.body;
 
   try {
-    const user = await Users.findByPk(id);
+    const user = await Role.findByPk(id);
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
@@ -99,7 +82,7 @@ const remove = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const user = await Users.findByPk(id);
+    const user = await Role.findByPk(id);
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
