@@ -1,5 +1,7 @@
 const { sendErrorResponse } = require("../helpers/send_error_response");
+const Machine = require("../models/machine.model");
 const Role = require("../models/role.model");
+const UserAddress = require("../models/users.address");
 const Users = require("../models/users.model");
 
 const create = async (req, res) => {

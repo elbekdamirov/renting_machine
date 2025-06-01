@@ -4,6 +4,10 @@ const Machine = require("../models/machine.model");
 const Users = require("../models/users.model");
 const Region = require("../models/region.model");
 const District = require("../models/district.model");
+const { Op } = require("sequelize");
+const Image = require("../models/image.model");
+const Sequelize = require("../config/db");
+const sequelize = require("sequelize");
 
 const create = async (req, res) => {
   try {
@@ -57,6 +61,9 @@ const getAll = async (req, res) => {
         {
           model: District,
           attributes: ["name"],
+        },
+        {
+          model: Image,
         },
       ],
       attributes: {
@@ -134,10 +141,69 @@ const remove = async (req, res) => {
   }
 };
 
+//--------------------- Homework -----------------------------//
+const selectByRegion = async (req, res) => {
+  try {
+    const { region, district } = req.body;
+
+    const data = await Machine.findAll({
+      include: [
+        {
+          model: Region,
+          where: {
+            name: { [Op.like]: `%${region}%` },
+          },
+        },
+        {
+          model: District,
+          where: {
+            name: { [Op.like]: `%${district}%` },
+          },
+        },
+      ],
+    });
+
+    res.status(200).send({ data });
+  } catch (error) {
+    sendErrorResponse(error, res, 400);
+  }
+};
+
+const selectByImageCount = async (req, res) => {
+  const { imageCount } = req.body;
+
+  try {
+    const [results, metadata] = await Sequelize.query(
+      `
+      SELECT
+        "machine"."id",
+        "machine"."name",
+        COUNT("image"."id") AS "imageCount"
+      FROM "machine"
+      LEFT JOIN "image" ON "image"."machineId" = "machine"."id"
+      GROUP BY "machine"."id", "machine"."name"
+      HAVING COUNT("image"."id") >= :imageCount
+      `,
+      {
+        replacements: { imageCount },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).send({ data: results });
+  } catch (error) {
+    sendErrorResponse(error, res, 400);
+  }
+};
+
+//--------------------- Homework -----------------------//
+
 module.exports = {
   create,
   getAll,
   getOne,
   update,
   remove,
+  selectByRegion,
+  selectByImageCount,
 };

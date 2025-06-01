@@ -4,6 +4,8 @@ const Contract = require("../models/contract.model");
 const Machine = require("../models/machine.model");
 const Status = require("../models/status.model");
 const Users = require("../models/users.model");
+const Sequelize = require("../config/db");
+const sequelize = require("sequelize");
 
 const create = async (req, res) => {
   try {
@@ -126,10 +128,34 @@ const remove = async (req, res) => {
   }
 };
 
+const getCancelledContracts = async (req, res) => {
+  try {
+    const results = await Sequelize.query(
+      `
+      SELECT
+        "contract"."id",
+        "contract"."total_price",
+        "status"."name"
+      FROM "contract"
+      LEFT JOIN "status" ON "status"."id" = "contract"."statusId"
+      WHERE "status"."name" = 'cancelled'
+      `,
+      {
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).send({ data: results });
+  } catch (error) {
+    sendErrorResponse(error, res, 400);
+  }
+};
+
 module.exports = {
   create,
   getAll,
   getOne,
   update,
   remove,
+  getCancelledContracts,
 };

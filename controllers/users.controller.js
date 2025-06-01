@@ -1,9 +1,12 @@
+const { Op } = require("sequelize");
 const { sendErrorResponse } = require("../helpers/send_error_response");
 const Machine = require("../models/machine.model");
 const Role = require("../models/role.model");
 const UserAddress = require("../models/users.address");
 const Users = require("../models/users.model");
+const Contract = require("../models/contract.model");
 const bcrypt = require("bcrypt");
+const Category = require("../models/category.model");
 
 const create = async (req, res) => {
   try {
@@ -111,10 +114,49 @@ const remove = async (req, res) => {
   }
 };
 
+const selectByTime = async (req, res) => {
+  const { full_name, start_time, end_time, category } = req.body;
+
+  const data = await Users.findAll({
+    where: { full_name },
+    include: [
+      {
+        model: Contract,
+        include: [
+          {
+            model: Machine,
+            attributes: ["name"],
+            include: [
+              {
+                model: Category,
+                where: { name: category },
+              },
+            ],
+          },
+        ],
+        attributes: ["start_time", "end_time"],
+        where: {
+          start_time: {
+            [Op.between]: [start_time, end_time],
+          },
+          end_time: {
+            [Op.between]: [start_time, end_time],
+          },
+        },
+      },
+    ],
+
+    attributes: ["full_name"],
+  });
+
+  res.status(200).send({ data });
+};
+
 module.exports = {
   create,
   getAll,
   getOne,
   update,
   remove,
+  selectByTime,
 };
